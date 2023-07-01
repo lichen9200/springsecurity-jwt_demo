@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bbbuuuyyy.taobao.dao.AuthorMapper">
+    <resultMap id="AuthorAndBlog" type="Author">
+<!--        先省略不写其他名称可以自动转换的属性试试-->
+        <id property="id" column="id"/>
+<!--        实验证明可以，数据表列和实体类属性名相同的可以省略不写-->
+<!--        <result property="username" column="username"/>-->
+<!--        <result property="password" column="password"/>-->
+<!--        <result property="createTime" column="create_time"/>-->
+<!--        搞个延迟加载看看效果。。。-->
+        <association property="blog" column="id" select="selectAuthorOwnedBlog"  />
+    </resultMap>
+
+<!--    注册，插入新作者-->
+    <insert id="addAuthor" parameterType="Author">
+        insert into author (username,password,create_time)
+        values(#{username},#{password},#{createTime});
+    </insert>
+<!--    根据用户名查作者-->
+<!--    select * 不好吗？？-->
+    <select id="selectAuthorByUsername" resultType="Author">
+        select * from author where username = #{username};
+    </select>
+<!--    根据作者id，查询blog-->
+    <select id="selectAuthorOwnedBlog" resultType="Blog">
+<!--后期用动态sql完善-->
+        select * from blog where author_id = #{id};
+    </select>
+
+<!--    查询作者信息，包括其blog-->
+
+    <select id="selectAuthorAndItsBlog" resultMap="AuthorAndBlog">
+        select * from author where id = #{id};
+    </select>
+</mapper>

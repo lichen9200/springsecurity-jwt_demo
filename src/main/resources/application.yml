@@ -1,0 +1,22 @@
+server:
+  port: 8099
+##  servlet:
+##    context-path: /taobao
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/mybatis_demo_blog?characterEncoding=utf8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  #配置，xml文件存放路径，springboot知道@Mapper，xml指定Mapper接口文件，没人知道xml文件
+  ##记得要配置这个！！！！！
+  mapper-locations: classpath:mapper/*.xml
+
+  #配置，实体类可以使用短限定名
+  type-aliases-package: com.bbbuuuyyy.taobao.entity
+  configuration:
+    #配置，控制台输出执行的sql
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #配置，实体类的属性名大写和数据库表的“_”自动转换
+    map-underscore-to-camel-case: true

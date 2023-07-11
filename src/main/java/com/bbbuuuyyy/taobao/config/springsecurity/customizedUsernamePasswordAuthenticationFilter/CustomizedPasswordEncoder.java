@@ -20,11 +20,14 @@ public class CustomizedPasswordEncoder implements PasswordEncoder {
 
     public String encode(CharSequence rawPassword) {
         //直接调用内置的加密器
+        //每次密码加密后结果都不同。。这么牛。。。要使用配套的比对方法。。
         return new BCryptPasswordEncoder().encode(rawPassword);
     }
 
+
+    //是使用用户输入的原生密码和数据库存放的加密后的密码比对
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return false;
+        return new BCryptPasswordEncoder().matches(rawPassword,encodedPassword);
     }
 }

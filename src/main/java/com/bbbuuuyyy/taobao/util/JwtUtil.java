@@ -4,8 +4,10 @@ import com.bbbuuuyyy.taobao.config.springsecurity.customizedUsernamePasswordAuth
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.Authentication;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +20,10 @@ public class JwtUtil {
     private static final long EXPIRATION_TIME = 86400000;  // 令牌的过期时间（以毫秒为单位），这里设置为24小时
 
     // 生成JWT令牌
-    public static String generateToken(UserDetail userDetail) {
+    public static String generateToken(Authentication hasLoginAuthentication) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetail.getUsername());
+        claims.put("roles",hasLoginAuthentication.getAuthorities());
+        return createToken(claims, (String) hasLoginAuthentication.getPrincipal());
     }
 //自定义的生成token的方法，先用着
     public static String generate(String userName) {
@@ -42,14 +45,15 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) //密钥和加密算法.
                 .compact();
     }
 
     // 验证JWT令牌是否有效
-    public static Boolean validateToken(String token, UserDetail userDetails) {
+    //对jwt的信息,应该完全信任吗?特别是权限和用户名信息??
+    public static Boolean validateToken(String token) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (!isTokenExpired(token));
     }
 
     // 从JWT令牌中提取用户名

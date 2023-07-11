@@ -4,6 +4,7 @@ import com.bbbuuuyyy.taobao.entity.JwtAndAuthorities;
 import com.bbbuuuyyy.taobao.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +22,7 @@ public class CustomizedAuthenticationManager implements AuthenticationManager {
     @Autowired
     UserServiceImpl userService;
     @Override
-    public JwtAndAuthorities authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         System.out.println("自定义的验证方法被调用了。。。。");
         System.out.println("说权限集为null，不能通过？？");
 
@@ -30,15 +31,20 @@ public class CustomizedAuthenticationManager implements AuthenticationManager {
         if(userDetail != null )
         {
             System.out.println(userDetail);
-            String encodedPasswd =  passwordEncoder.encode((CharSequence) authentication.getPrincipal());
-            System.out.println(encodedPasswd);
-            if( passwordEncoder.matches(userDetail.getPassword(),encodedPasswd))
+            System.out.println("charS:" + (CharSequence) authentication.getCredentials());
+            String encodedPasswd =  passwordEncoder.encode((CharSequence) authentication.getCredentials());
+            System.out.println("输入的密码加密后是：" + encodedPasswd);
+            if( passwordEncoder.matches((CharSequence) authentication.getCredentials(),userDetail.getPassword()))
             {
                 System.out.println("密码正确。。。。" + userDetail.getAuthorities());
-                String jwtToken = JwtUtil.generate(authentication.getName());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-               JwtAndAuthorities jwtAndAuthorities =  new JwtAndAuthorities((String)authentication.getPrincipal(),jwtToken,userDetail.getAuthorities());
-               return jwtAndAuthorities;
+               // String jwtToken = JwtUtil.generate(authentication.getName());
+                //不是存放入上下文就相当于登录的吗？？？原来是框架根据返回的对象进行判断。。。。是否登录成功。。。
+                //应该如何实现？登录成功后，跳转到之前请求的页面？是转发还是重定向？？？
+               Authentication hasLoginINauthentication =  new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),authentication.getCredentials(),authentication.getAuthorities());
+                //SecurityContextHolder.getContext().setAuthentication(authentication)
+
+               //JwtAndAuthorities jwtAndAuthorities =  new JwtAndAuthorities((String)authentication.getPrincipal(),jwtToken,userDetail.getAuthorities());
+               return hasLoginINauthentication;
 
 
 

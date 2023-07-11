@@ -2,6 +2,8 @@ package com.bbbuuuyyy.taobao;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 
 @SpringBootApplication
@@ -10,8 +12,8 @@ public class TaobaoApplication {
 //  LoginFilter loginFilter;
 
     public static void main(String[] args) {
-        SpringApplication.run(TaobaoApplication.class, args);
-      //  System.out.println(loginFilter.getHH());
+        ConfigurableApplicationContext applicationContext =  SpringApplication.run(TaobaoApplication.class, args);
+        System.out.println();
 
     }
 
